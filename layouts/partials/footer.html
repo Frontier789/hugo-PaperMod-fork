@@ -80,7 +80,14 @@
 
 {{- if (not site.Params.disableThemeToggle) }}
 <script>
-    document.getElementById("theme-toggle").addEventListener("click", () => {
+    const themeToggleBtn = document.getElementById("theme-toggle");
+
+    function updateThemeToggleTitle() {
+        const isDark = document.body.classList.contains("dark");
+        themeToggleBtn.title = (isDark ? "Light Mode" : "Dark Mode") + " (Shift + D)";
+    }
+
+    function toggleTheme() {
         if (document.body.className.includes("dark")) {
             document.body.classList.remove('dark');
             localStorage.setItem("pref-theme", 'light');
@@ -88,7 +95,21 @@
             document.body.classList.add('dark');
             localStorage.setItem("pref-theme", 'dark');
         }
-    })
+        updateThemeToggleTitle();
+    }
+
+    themeToggleBtn.addEventListener("click", toggleTheme);
+
+    document.addEventListener("keydown", (e) => {
+        const tag = (e.target.tagName || "").toLowerCase();
+        if (tag === "input" || tag === "textarea" || e.target.isContentEditable) return;
+        if (e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey && (e.key === "D" || e.key === "d")) {
+            e.preventDefault();
+            toggleTheme();
+        }
+    });
+
+    updateThemeToggleTitle();
 
 </script>
 {{- end }}
