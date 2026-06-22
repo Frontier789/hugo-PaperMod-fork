@@ -163,3 +163,91 @@
     });
 </script>
 {{- end }}
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const cppTokens = document.querySelectorAll('pre.chroma code span');
+
+    let getNextNonEmptyToken = (startNode) => {
+        let next = startNode.nextSibling;
+        while (next) {
+            let txt = next.textContent.trim();
+            if (txt !== "") {
+                return txt;
+            }
+            next = next.nextSibling;
+        }
+        return "";
+    };
+
+    cppTokens.forEach(token => {
+        // ::
+        if (token.textContent.trim() == "::") {
+            token.classList.add('sr');
+            return;
+        }
+
+        // function
+        if (getNextNonEmptyToken(token).startsWith("(")) {
+            token.classList.add('nf');
+            return;
+        }
+
+        // std namespace
+        if (getNextNonEmptyToken(token).startsWith("::")) {
+            if (token.textContent.trim() == "std") {
+                token.classList.add('st');
+                return;
+            }
+        }
+
+        // Type
+        const text = token.textContent.trim();
+
+        if (/^[A-Z]/.test(text)) {
+            token.classList.add('ct');
+        }
+
+        // std types
+        let current = token.previousSibling;
+        let expectColon = true;
+        let isStdNamespace = false;
+        const tokensToHighlight = [token];
+
+        while (current) {
+            const currentText = current.textContent.trim();
+
+            if (currentText === "") {
+                current = current.previousSibling;
+                continue;
+            }
+
+            if (expectColon) {
+                if (currentText === '::') {
+                    expectColon = false;
+                } else {
+                    break;
+                }
+            } else {
+                tokensToHighlight.push(current);
+                isStdNamespace = true;
+                expectColon = true;
+
+                if (currentText === 'std') {
+                    break;
+                }
+            }
+
+            current = current.previousSibling;
+        }
+
+        if (isStdNamespace) {
+            tokensToHighlight.forEach(el => {
+                if (el.classList) {
+                    el.classList.add('st');
+                }
+            });
+        }
+    });
+});
+</script>
