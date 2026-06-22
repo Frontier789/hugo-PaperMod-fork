@@ -168,6 +168,8 @@
 document.addEventListener("DOMContentLoaded", function() {
     const cppTokens = document.querySelectorAll('pre.chroma code span');
 
+    let knownTypes = ["dim3"];
+
     let getNextNonEmptyToken = (startNode) => {
         let next = startNode.nextSibling;
         while (next) {
@@ -188,9 +190,13 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         // function
-        if (token.classList.contains("n") && getNextNonEmptyToken(token).startsWith("(")) {
-            token.classList.add('nf');
-            return;
+        if (token.classList.contains("n")) {
+            let nextTokenText = getNextNonEmptyToken(token);
+
+            if (nextTokenText.startsWith("(") || nextTokenText.startsWith("<<<")) {
+                token.classList.add('nf');
+                return;
+            }
         }
 
         // std namespace
@@ -204,7 +210,7 @@ document.addEventListener("DOMContentLoaded", function() {
         // Type
         const text = token.textContent.trim();
 
-        if (/^[A-Z]/.test(text)) {
+        if (/^[A-Z]/.test(text) || knownTypes.includes(text)) {
             token.classList.add('ct');
         }
 
