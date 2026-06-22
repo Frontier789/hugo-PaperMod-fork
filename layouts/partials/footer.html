@@ -188,7 +188,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         // function
-        if (getNextNonEmptyToken(token).startsWith("(")) {
+        if (token.classList.contains("n") && getNextNonEmptyToken(token).startsWith("(")) {
             token.classList.add('nf');
             return;
         }
