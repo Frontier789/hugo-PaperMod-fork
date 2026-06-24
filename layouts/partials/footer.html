@@ -211,7 +211,10 @@ document.addEventListener("DOMContentLoaded", function() {
         const text = token.textContent.trim();
 
         if (/^[A-Z]/.test(text) || knownTypes.includes(text)) {
-            token.classList.add('ct');
+            // Exclude lines in txt language
+            if (!text.includes(' ')) {
+                token.classList.add('ct');
+            }
         }
 
         // std types
