@@ -189,6 +189,16 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
+        // keywords
+        if (token.textContent.trim().startsWith("__")) {
+            if (token.classList.contains("n")) {
+                token.classList.remove("n");
+            }
+
+            token.classList.add("k");
+            return;
+        }
+
         // function
         if (token.classList.contains("n")) {
             let nextTokenText = getNextNonEmptyToken(token);
